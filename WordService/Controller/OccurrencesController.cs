@@ -5,7 +5,7 @@ using WordService;
 [Route("[controller]")]
 public class Occurrences : Controller
 {
-    private Database _dataBase = new Database();
+    private Database _dataBase = Database.getInstance();
 
     [HttpPost("InsertAllOcc")]
     public void InsertAllOcc(int docId, ISet<int> wordIds)

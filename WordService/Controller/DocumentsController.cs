@@ -6,7 +6,7 @@ using WordService;
 public class DocumentsController : Controller
 {
 
-    private Database _dataBase = new Database();
+    private Database _dataBase = Database.getInstance();
 
     [HttpPost("InsertDocument")]
     public void InsertDocument(int id, string url)

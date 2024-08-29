@@ -8,7 +8,7 @@ namespace WordService
         private SqlConnection _connection;
         private static readonly Database _instance = new();
 
-        public Database()
+        private Database()
         {
             _connection = new ("Server=localhost;User Id=sa;Password=SuperSecret7!;Encrypt=false;");
             _connection.Open();

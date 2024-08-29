@@ -6,7 +6,7 @@ using WordService;
 public class DatabaceManagementController : Controller
 {
 
-    private Database _dataBase = new Database();
+    private Database _dataBase = Database.getInstance();
 
     [HttpDelete("DeleteDatabase")]
     public void DeleteDatabase()

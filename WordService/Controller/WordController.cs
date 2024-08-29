@@ -5,7 +5,7 @@ using WordService;
 [Route("[controller]")]
 public class WordController : Controller
 {
-    private Database _dataBase = new Database();
+    private Database _dataBase = Database.getInstance();
 
     [HttpPost("InsertAllWords")]
     public void InsertAllWords(Dictionary<string, int> res)
