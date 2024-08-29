@@ -83,7 +83,6 @@ namespace Indexer
                         Content = new StringContent(JsonSerializer.Serialize(GetWordIdFromWords(wordsInFile)), Encoding.UTF8, "application/json")
                     };
                     api.Send(insertAllOccMessage);
-                    Console.WriteLine("running");
                 }
             }
 

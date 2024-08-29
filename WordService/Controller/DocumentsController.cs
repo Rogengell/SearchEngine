@@ -14,13 +14,13 @@ public class DocumentsController : Controller
         _dataBase.InsertDocument(id,url);
     }
 
-    [HttpGet("GetDocuments")]
+    [HttpPost("GetDocuments")]
     public Dictionary<int, int> GetDocuments(List<int> wordIds)
     {
         return _dataBase.GetDocuments(wordIds);
     }
     
-    [HttpGet("GetDocDetails")]
+    [HttpPost("GetDocDetails")]
     public List<string> GetDocDetails(List<int> docIds)
     {
         return _dataBase.GetDocDetails(docIds);
