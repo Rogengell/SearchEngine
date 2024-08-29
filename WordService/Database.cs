@@ -45,6 +45,7 @@ namespace WordService
                 }
 
                 transaction.Commit();
+                
             }
         }
 
