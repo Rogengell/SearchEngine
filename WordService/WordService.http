@@ -1,6 +1,0 @@
-@WordService_HostAddress = http://localhost:5120
-
-GET {{WordService_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
