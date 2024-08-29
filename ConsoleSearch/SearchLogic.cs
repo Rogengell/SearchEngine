@@ -31,27 +31,38 @@ namespace ConsoleSearch
         }
 
         public Dictionary<int, int> GetDocuments(List<int> wordIds)
-        {
-            var getDocuments = new HttpRequestMessage(HttpMethod.Post, "Documents/GetDocumentss")
-            {
-                Content = new StringContent(JsonSerializer.Serialize(wordIds), Encoding.UTF8, "application/json")
-            };
-            HttpResponseMessage responce = api.Send(getDocuments);
-            var body = responce.Content.ReadAsStringAsync().Result;
-            Console.WriteLine(body + " 1");
-            return JsonSerializer.Deserialize<Dictionary<int, int>>(body); 
+        { 
+            if(wordIds.Count>0){
+                var getDocuments = new HttpRequestMessage(HttpMethod.Post, "Documents/GetDocuments")
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(wordIds), Encoding.UTF8, "application/json")
+                };
+                HttpResponseMessage responce = api.Send(getDocuments);
+                var body = responce.Content.ReadAsStringAsync().Result;
+
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    return JsonSerializer.Deserialize<Dictionary<int, int>>(body);
+                }
+            }
+            return new Dictionary<int, int>();
         }
 
         public List<string> GetDocumentDetails(List<int> docIds)
         {
-            var getDocumentDetails = new HttpRequestMessage(HttpMethod.Post, "Documents/GetDocDetails")
-            {
-                Content = new StringContent(JsonSerializer.Serialize(docIds), Encoding.UTF8, "application/json")
-            };
-            HttpResponseMessage responce = api.Send(getDocumentDetails);
-            var body = responce.Content.ReadAsStringAsync().Result;
-            Console.WriteLine(body + " 2");
-            return JsonSerializer.Deserialize<List<string>>(body); 
+            if(docIds.Count>0){
+                var getDocumentDetails = new HttpRequestMessage(HttpMethod.Post, "Documents/GetDocDetails")
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(docIds), Encoding.UTF8, "application/json")
+                };
+                HttpResponseMessage responce = api.Send(getDocumentDetails);
+                string body = responce.Content.ReadAsStringAsync().Result;
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    return JsonSerializer.Deserialize<List<string>>(body); 
+                }
+            }
+            return new List<string>();
         }
     }
 }

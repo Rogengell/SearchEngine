@@ -135,7 +135,6 @@ namespace WordService
                     res.Add(docId, count);
                 }
             }
-
             return res;
         }
 
