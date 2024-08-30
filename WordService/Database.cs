@@ -10,7 +10,7 @@ namespace WordService
 
         private Database()
         {
-            _connection = new ("Server=localhost;User Id=sa;Password=SuperSecret7!;Encrypt=false;");
+            _connection = new ("Server=word-db;User Id=sa;Password=SuperSecret7!;Encrypt=false;");
             _connection.Open();
         }
 

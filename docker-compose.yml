@@ -4,11 +4,30 @@ services:
     environment:
       MSSQL_SA_PASSWORD: "SuperSecret7!"
       ACCEPT_EULA: "Y"
-    volumes:
+    volumes: 
       - mssql-data:/var/opt/mssql
     ports:
       - 1433:1433
-  
+  word-service:
+    build:
+      context: .
+      dockerfile: WordService/Dockerfile
+    deploy:
+      replicas: 2
+    depends_on:
+      - word-db
+  indexer-services:
+    build:
+      context: .
+      dockerfile: Indexer/Dockerfile
+    depends_on:
+      - word-service
+  console-services:
+    build:
+      context: .
+      dockerfile: ConsoleSearch/Dockerfile
+    depends_on:
+      - indexer-services
 
 volumes:
   mssql-data:

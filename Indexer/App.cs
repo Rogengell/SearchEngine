@@ -11,10 +11,12 @@ namespace Indexer
     {
         public void Run()
         {
-            HttpClient api = new() { BaseAddress = new Uri("http://localhost:5120")};
+            HttpClient api = new() { BaseAddress = new Uri("http://word-service")};
 
             var urlDelete = "DatabaceManagement/DeleteDatabase";
-            var responseDelete = api.Send(new HttpRequestMessage(HttpMethod.Delete, urlDelete));
+            var temp = new HttpRequestMessage(HttpMethod.Delete, urlDelete);
+            Console.WriteLine(temp.RequestUri);
+            var responseDelete = api.Send(temp);
             if(responseDelete.StatusCode.Equals(HttpStatusCode.OK))
             {
                 Console.WriteLine("OK delete");

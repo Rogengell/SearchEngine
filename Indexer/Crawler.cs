@@ -13,7 +13,7 @@ namespace Indexer
     {
         private readonly char[] sep = " \\\n\t\"$'!,?;.:-_**+=)([]{}<>/@&%€#".ToCharArray();
 
-        private new HttpClient api = new() { BaseAddress = new Uri("http://localhost:5120")};
+        private new HttpClient api = new() { BaseAddress = new Uri("http://word-service")};
         private Dictionary<string, int> words = new Dictionary<string, int>();
         private Dictionary<string, int> documents = new Dictionary<string, int>();
 
