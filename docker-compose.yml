@@ -27,7 +27,8 @@ services:
       context: .
       dockerfile: ConsoleSearch/Dockerfile
     depends_on:
-      - indexer-services
+      indexer-services:
+        condition: service_completed_successfully
 
 volumes:
   mssql-data:
