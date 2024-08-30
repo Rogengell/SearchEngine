@@ -22,4 +22,5 @@ RUN dotnet publish "Indexer.csproj" -c $configuration -o /app/publish /p:UseAppH
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY Indexer/enron enron
 ENTRYPOINT ["dotnet", "Indexer.dll"]

@@ -1,13 +1,47 @@
 services:
-  word-db:
+  document-db:
     image: mcr.microsoft.com/azure-sql-edge:latest
     environment:
       MSSQL_SA_PASSWORD: "SuperSecret7!"
       ACCEPT_EULA: "Y"
     volumes: 
-      - mssql-data:/var/opt/mssql
-    ports:
-      - 1433:1433
+      - mssql-document:/var/opt/mssql
+  occurrence-db:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    environment:
+      MSSQL_SA_PASSWORD: "SuperSecret7!"
+      ACCEPT_EULA: "Y"
+    volumes: 
+      - mssql-occurrence:/var/opt/mssql
+    depends_on:
+      - document-db
+  short-word-db:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    environment:
+      MSSQL_SA_PASSWORD: "SuperSecret7!"
+      ACCEPT_EULA: "Y"
+    volumes: 
+      - mssql-data-short:/var/opt/mssql
+    depends_on:
+      - occurrence-db
+  medium-word-db:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    environment:
+      MSSQL_SA_PASSWORD: "SuperSecret7!"
+      ACCEPT_EULA: "Y"
+    volumes: 
+      - mssql-data-medium:/var/opt/mssql
+    depends_on:
+      - short-word-db
+  long-word-db:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    environment:
+      MSSQL_SA_PASSWORD: "SuperSecret7!"
+      ACCEPT_EULA: "Y"
+    volumes: 
+      - mssql-data-long:/var/opt/mssql
+    depends_on:
+      - medium-word-db
   word-service:
     build:
       context: .
@@ -15,7 +49,11 @@ services:
     deploy:
       replicas: 2
     depends_on:
-      - word-db
+      - document-db
+      - occurrence-db
+      - short-word-db
+      - medium-word-db
+      - long-word-db
   indexer-services:
     build:
       context: .
@@ -31,4 +69,8 @@ services:
         condition: service_completed_successfully
 
 volumes:
-  mssql-data:
+  mssql-data-short:
+  mssql-data-medium:
+  mssql-data-long:
+  mssql-document:
+  mssql-occurrence: 
