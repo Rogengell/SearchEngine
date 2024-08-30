@@ -13,7 +13,7 @@ namespace ConsoleSearch
     public class SearchLogic
     {
         Dictionary<string, int> mWords;
-        private new HttpClient api = new() { BaseAddress = new Uri("http://word-services")};
+        private new HttpClient api = new() { BaseAddress = new Uri("http://word-service")};
 
         public SearchLogic()
         {
