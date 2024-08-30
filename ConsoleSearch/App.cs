@@ -11,11 +11,11 @@ namespace ConsoleSearch
         {
             SearchLogic mSearchLogic = new SearchLogic();
             Console.WriteLine("Console Search");
-            
+
             while (true)
             {
                 Console.WriteLine("enter search terms - q for quit [default: hello]");
-                string input = Console.ReadLine() ?? "base"; // Search for base by default
+                string input = Console.ReadLine() ?? "hello"; // Search for base by default
                 if (input.Equals("q")) break;
 
                 var wordIds = new List<int>();
@@ -49,11 +49,11 @@ namespace ConsoleSearch
                 int idx = 0;
                 foreach (var doc in mSearchLogic.GetDocumentDetails(top10))
                 {
-                    Console.WriteLine("" + (idx+1) + ": " + doc + " -- contains " + docIds[docIds.Keys.ToArray()[idx]] + " search terms");
+                    Console.WriteLine("" + (idx + 1) + ": " + doc + " -- contains " + docIds[docIds.Keys.ToArray()[idx]] + " search terms");
                     idx++;
                 }
                 Console.WriteLine("Documents: " + docIds.Count + ". Time: " + used.TotalMilliseconds);
-                
+
                 Thread.Sleep(1000);
             }
         }

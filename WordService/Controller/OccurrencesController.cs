@@ -10,6 +10,7 @@ public class Occurrences : Controller
     [HttpPost("InsertAllOcc")]
     public void InsertAllOcc(int docId, ISet<int> wordIds)
     {
-       _dataBase.InsertAllOcc(docId,wordIds);
+        Console.WriteLine(Environment.MachineName);
+        _dataBase.InsertAllOcc(docId, wordIds);
     }
 }

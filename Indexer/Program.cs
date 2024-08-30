@@ -7,22 +7,21 @@ namespace Indexer
 {
     class Program
     {
-        // test command:
         static void Main(string[] args)
         {
+            DecompressGzipFile("enron/mikro.tar.gz", "mails.tar");
+            if (Directory.Exists("maildir")) Directory.Delete("maildir", true);
+
+            string binPath = AppDomain.CurrentDomain.BaseDirectory;
+
+            if (binPath.EndsWith("bin\\Debug\\net7.0\\") || binPath.EndsWith("bin\\Release\\net7.0\\"))
+            {
+                if (File.Exists(binPath + "._maildir")) File.Delete(binPath + "._maildir");
+            }
+            TarFile.ExtractToDirectory("mails.tar", ".", false);
+
             if (true)
             {
-                DecompressGzipFile("enron/mikro.tar.gz", "mails.tar");
-                if (Directory.Exists("maildir")) Directory.Delete("maildir", true);
-
-                string binPath = AppDomain.CurrentDomain.BaseDirectory;
-
-                if (binPath.EndsWith("bin\\Debug\\net7.0\\") || binPath.EndsWith("bin\\Release\\net7.0\\"))
-                {
-                    if (File.Exists(binPath + "._maildir")) File.Delete(binPath + "._maildir");
-                }
-                TarFile.ExtractToDirectory("mails.tar", ".", false);
-
                 new Renamer().Crawl(new DirectoryInfo("maildir"));
                 new App().Run();
             }

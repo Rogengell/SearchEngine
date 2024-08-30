@@ -11,18 +11,21 @@ public class DocumentsController : Controller
     [HttpPost("InsertDocument")]
     public void InsertDocument(int id, string url)
     {
-        _dataBase.InsertDocument(id,url);
+        Console.WriteLine(Environment.MachineName);
+        _dataBase.InsertDocument(id, url);
     }
 
     [HttpPost("GetDocuments")]
     public Dictionary<int, int> GetDocuments(List<int> wordIds)
     {
+        Console.WriteLine(Environment.MachineName);
         return _dataBase.GetDocuments(wordIds);
     }
-    
+
     [HttpPost("GetDocDetails")]
     public List<string> GetDocDetails(List<int> docIds)
     {
+        Console.WriteLine(Environment.MachineName);
         return _dataBase.GetDocDetails(docIds);
     }
 }

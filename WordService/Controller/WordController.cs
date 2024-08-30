@@ -10,12 +10,14 @@ public class WordController : Controller
     [HttpPost("InsertAllWords")]
     public void InsertAllWords(Dictionary<string, int> res)
     {
+        Console.WriteLine(Environment.MachineName);
         _dataBase.InsertAllWords(res);
     }
 
     [HttpGet("GetAllWords")]
     public Dictionary<string, int> GetAllWords()
     {
+        Console.WriteLine(Environment.MachineName);
         return _dataBase.GetAllWords();
     }
 }

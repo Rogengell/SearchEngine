@@ -11,12 +11,14 @@ public class DatabaceManagementController : Controller
     [HttpDelete("DeleteDatabase")]
     public void DeleteDatabase()
     {
+        Console.WriteLine(Environment.MachineName);
         _dataBase.DeleteDatabase();
     }
 
     [HttpPost("CreateDatabase")]
     public void CreateDatabase()
     {
+        Console.WriteLine(Environment.MachineName);
         _dataBase.CreateDatabase();
     }
 }

@@ -4,14 +4,14 @@ services:
     environment:
       MSSQL_SA_PASSWORD: "SuperSecret7!"
       ACCEPT_EULA: "Y"
-    volumes: 
+    volumes:
       - mssql-document:/var/opt/mssql
   occurrence-db:
     image: mcr.microsoft.com/azure-sql-edge:latest
     environment:
       MSSQL_SA_PASSWORD: "SuperSecret7!"
       ACCEPT_EULA: "Y"
-    volumes: 
+    volumes:
       - mssql-occurrence:/var/opt/mssql
     depends_on:
       - document-db
@@ -20,7 +20,7 @@ services:
     environment:
       MSSQL_SA_PASSWORD: "SuperSecret7!"
       ACCEPT_EULA: "Y"
-    volumes: 
+    volumes:
       - mssql-data-short:/var/opt/mssql
     depends_on:
       - occurrence-db
@@ -29,7 +29,7 @@ services:
     environment:
       MSSQL_SA_PASSWORD: "SuperSecret7!"
       ACCEPT_EULA: "Y"
-    volumes: 
+    volumes:
       - mssql-data-medium:/var/opt/mssql
     depends_on:
       - short-word-db
@@ -38,7 +38,7 @@ services:
     environment:
       MSSQL_SA_PASSWORD: "SuperSecret7!"
       ACCEPT_EULA: "Y"
-    volumes: 
+    volumes:
       - mssql-data-long:/var/opt/mssql
     depends_on:
       - medium-word-db
@@ -67,10 +67,12 @@ services:
     depends_on:
       indexer-services:
         condition: service_completed_successfully
+      word-service:
+        condition: service_started
 
 volumes:
   mssql-data-short:
   mssql-data-medium:
   mssql-data-long:
   mssql-document:
-  mssql-occurrence: 
+  mssql-occurrence:
