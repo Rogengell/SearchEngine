@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.2" />
     <PackageReference Include="SQLitePCLRaw.core" Version="2.0.7" />
+    <PackageReference Include="RestSharp" Version="112.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Data.SqlClient">

@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
+using RestSharp;
 
 namespace Indexer
 {
@@ -13,7 +14,8 @@ namespace Indexer
     {
         private readonly char[] sep = " \\\n\t\"$'!,?;.:-_**+=)([]{}<>/@&%€#".ToCharArray();
 
-        private new HttpClient api = new() { BaseAddress = new Uri("http://word-service")};
+        //private new HttpClient api = new() { BaseAddress = new Uri("http://WordServices.localhost:80")};
+        RestClient restClient = new RestClient("http://word-service");
         private Dictionary<string, int> words = new Dictionary<string, int>();
         private Dictionary<string, int> documents = new Dictionary<string, int>();
 
@@ -58,9 +60,12 @@ namespace Indexer
                 if (extensions.Contains(file.Extension))
                 {
                     documents.Add(file.FullName, documents.Count + 1);
-
+                    /*
                     var documentMessage = new HttpRequestMessage(HttpMethod.Post, "Documents/InsertDocument?id=" + documents[file.FullName]  + "&url=" + Uri.EscapeDataString(file.FullName));
                     api.Send(documentMessage);
+                    */
+                    var documentMessage = "DatabaceManagement/DeleteDatabase";
+                    restClient.PostAsync(new RestRequest(documentMessage + "?id=" + documents[file.FullName]  + "&url=" + Uri.EscapeDataString(file.FullName)));
 
                     Dictionary<string, int> newWords = new Dictionary<string, int>();
                     ISet<string> wordsInFile = ExtractWordsInFile(file);
@@ -72,6 +77,15 @@ namespace Indexer
                             newWords.Add(aWord, words[aWord]);
                         }
                     }
+
+                    var newWordtMessage = "Word/InsertAllWords";
+                    restClient.PostAsync(new RestRequest(newWordtMessage).AddParameter("application/json", JsonSerializer.Serialize(newWords), ParameterType.RequestBody));
+
+                    var insertAllOccMessage = "Occurrences/InsertAllOcc?docId=" + documents[file.FullName];
+                    restClient.PostAsync(new RestRequest(insertAllOccMessage).AddParameter("application/json", JsonSerializer.Serialize(wordsInFile), ParameterType.RequestBody));
+
+
+                    /*
                     var newWordtMessage = new HttpRequestMessage(HttpMethod.Post, "Word/InsertAllWords")
                     {
                         Content = new StringContent(JsonSerializer.Serialize(newWords), Encoding.UTF8, "application/json")
@@ -83,6 +97,7 @@ namespace Indexer
                         Content = new StringContent(JsonSerializer.Serialize(GetWordIdFromWords(wordsInFile)), Encoding.UTF8, "application/json")
                     };
                     api.Send(insertAllOccMessage);
+                    */
                 }
             }
 

@@ -59,14 +59,13 @@ services:
       context: .
       dockerfile: Indexer/Dockerfile
     depends_on:
-      - word-service
+      word-service:
+        condition: service_started
   console-services:
     build:
       context: .
       dockerfile: ConsoleSearch/Dockerfile
     depends_on:
-      indexer-services:
-        condition: service_completed_successfully
       word-service:
         condition: service_started
 

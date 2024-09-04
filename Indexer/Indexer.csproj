@@ -27,5 +27,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.2" />
+    <PackageReference Include="RestSharp" Version="112.0.0" />
   </ItemGroup>
 </Project>

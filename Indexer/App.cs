@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using RestSharp;
 
 namespace Indexer
 {
@@ -11,8 +12,18 @@ namespace Indexer
     {
         public void Run()
         {
-            HttpClient api = new() { BaseAddress = new Uri("http://word-service")};
+            //HttpClient api = new() { BaseAddress = new Uri("http://WordServices.localhost:80/")};
+            
+            RestClient restClient = new RestClient("http://word-service");
 
+            var urlDelete = "DatabaceManagement/DeleteDatabase";
+            restClient.DeleteAsync(new RestRequest(urlDelete));
+
+            var urlCreate = "DatabaceManagement/CreateDatabase";
+            restClient.PostAsync(new RestRequest(urlCreate));
+
+            Console.WriteLine("DONE!");
+            /*
             var urlDelete = "DatabaceManagement/DeleteDatabase";
             var temp = new HttpRequestMessage(HttpMethod.Delete, urlDelete);
             Console.WriteLine(temp.RequestUri);
@@ -36,7 +47,7 @@ namespace Indexer
             {
                 Console.WriteLine("not ok");
             }
-
+            */
             Crawler crawler = new Crawler();
 
             var directoryArray = new DirectoryInfo("maildir").GetDirectories();
@@ -49,7 +60,7 @@ namespace Indexer
             }
             
             TimeSpan used = DateTime.Now - start;
-            Console.WriteLine("DONE! used " + used.TotalMilliseconds);
+            Console.WriteLine("DONE! used " + used.TotalMilliseconds); 
         }
     }
 }
