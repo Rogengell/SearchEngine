@@ -47,7 +47,7 @@ services:
       context: .
       dockerfile: WordService/Dockerfile
     deploy:
-      replicas: 2
+      replicas: 1
     depends_on:
       - document-db
       - occurrence-db

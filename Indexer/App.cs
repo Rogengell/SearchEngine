@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using RestSharp;
 
 namespace Indexer
@@ -19,6 +20,8 @@ namespace Indexer
             var urlDelete = "DatabaceManagement/DeleteDatabase";
             restClient.DeleteAsync(new RestRequest(urlDelete));
 
+            Thread.Sleep(2000);
+            
             var urlCreate = "DatabaceManagement/CreateDatabase";
             restClient.PostAsync(new RestRequest(urlCreate));
 

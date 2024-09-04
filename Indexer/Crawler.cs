@@ -64,7 +64,7 @@ namespace Indexer
                     var documentMessage = new HttpRequestMessage(HttpMethod.Post, "Documents/InsertDocument?id=" + documents[file.FullName]  + "&url=" + Uri.EscapeDataString(file.FullName));
                     api.Send(documentMessage);
                     */
-                    var documentMessage = "DatabaceManagement/DeleteDatabase";
+                    var documentMessage = "Documents/InsertDocument";
                     restClient.PostAsync(new RestRequest(documentMessage + "?id=" + documents[file.FullName]  + "&url=" + Uri.EscapeDataString(file.FullName)));
 
                     Dictionary<string, int> newWords = new Dictionary<string, int>();
@@ -84,6 +84,7 @@ namespace Indexer
                     var insertAllOccMessage = "Occurrences/InsertAllOcc?docId=" + documents[file.FullName];
                     restClient.PostAsync(new RestRequest(insertAllOccMessage).AddParameter("application/json", JsonSerializer.Serialize(wordsInFile), ParameterType.RequestBody));
 
+                    Thread.Sleep(1000);
 
                     /*
                     var newWordtMessage = new HttpRequestMessage(HttpMethod.Post, "Word/InsertAllWords")
