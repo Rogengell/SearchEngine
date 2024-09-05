@@ -15,6 +15,15 @@ public class WordController : Controller
     [HttpPost("InsertAllWords")]
     public async void InsertAllWords(Dictionary<string, int> res)
     {
+        try
+        {
+
+        }
+        catch (System.Exception ex)
+        {
+            Console.WriteLine("something went wrong in InsertAllWords " + ex.Message);
+            throw;
+        }
         Console.WriteLine(Environment.MachineName);
         await _dataBase.InsertAllWords(res);
     }
@@ -22,6 +31,15 @@ public class WordController : Controller
     [HttpGet("GetAllWords")]
     public async Task<Dictionary<string, int>> GetAllWords()
     {
+        try
+        {
+
+        }
+        catch (System.Exception ex)
+        {
+            Console.WriteLine("something went wrong in GetAllWords " + ex.Message);
+            throw;
+        }
         Console.WriteLine(Environment.MachineName);
         return await _dataBase.GetAllWords();
     }

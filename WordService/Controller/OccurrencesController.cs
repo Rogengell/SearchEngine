@@ -14,7 +14,15 @@ public class Occurrences : Controller
     [HttpPost("InsertAllOcc")]
     public async void InsertAllOcc(int docId, ISet<int> wordIds)
     {
-        Console.WriteLine(Environment.MachineName);
-        await _dataBase.InsertAllOcc(docId, wordIds);
+        try
+        {
+            Console.WriteLine(Environment.MachineName);
+            await _dataBase.InsertAllOcc(docId, wordIds);
+        }
+        catch (System.Exception ex)
+        {
+            Console.WriteLine("something went wrong in InsertAllOcc " + ex.Message);
+            throw;
+        }
     }
 }

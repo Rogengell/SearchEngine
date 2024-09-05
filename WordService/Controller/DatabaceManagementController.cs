@@ -16,7 +16,15 @@ public class DatabaceManagementController : Controller
     [HttpDelete("reCreateDatabase")]
     public async void ReCreateDatabase()
     {
-        Console.WriteLine(Environment.MachineName);
-        await _dataBase.ReCreateDatabase();
+        try
+        {
+            Console.WriteLine(Environment.MachineName);
+            await _dataBase.ReCreateDatabase();
+        }
+        catch (System.Exception ex)
+        {
+            Console.WriteLine("Something went wrong recreating the database" + ex.Message);
+            throw;
+        }
     }
 }

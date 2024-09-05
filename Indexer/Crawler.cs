@@ -41,7 +41,7 @@ namespace Indexer
         {
             ISet<int> res = new HashSet<int>();
 
-            foreach ( var p in src)
+            foreach (var p in src)
             {
                 res.Add(words[p]);
             }
@@ -52,7 +52,7 @@ namespace Indexer
         // in the directory [dir]. Only files with an extension in
         // [extensions] is read. The value part of the return value is
         // the number of occurrences of the key.
-        public async void IndexFilesIn(DirectoryInfo dir, List<string> extensions)
+        public void IndexFilesIn(DirectoryInfo dir, List<string> extensions)
         {
             Console.WriteLine("Crawling " + dir.FullName);
             var tasks = new List<Task>();
@@ -68,9 +68,9 @@ namespace Indexer
                     var documentMessage = "Documents/InsertDocument";
                     //restClient.PostAsync(new RestRequest(documentMessage + "?id=" + documents[file.FullName]  + "&url=" + Uri.EscapeDataString(file.FullName)));
 
-                    var taskDoc = Task.Run(() => 
+                    var taskDoc = Task.Run(() =>
                     {
-                        var documentMessage_request = new RestRequest(documentMessage + "?id=" + documents[file.FullName]  + "&url=" + Uri.EscapeDataString(file.FullName));
+                        var documentMessage_request = new RestRequest(documentMessage + "?id=" + documents[file.FullName] + "&url=" + Uri.EscapeDataString(file.FullName));
                         restClient.PostAsync(documentMessage_request).Wait();
                     });
 
@@ -90,21 +90,21 @@ namespace Indexer
 
                     var newWordtMessage = "Word/InsertAllWords";
                     //restClient.PostAsync(new RestRequest(newWordtMessage).AddParameter("application/json", JsonSerializer.Serialize(newWords), ParameterType.RequestBody));
-                    
-                    var taskWord = Task.Run(() => 
+
+                    var taskWord = Task.Run(() =>
                     {
-                        var newWordtMessage_request = new RestRequest(newWordtMessage,Method.Post);
+                        var newWordtMessage_request = new RestRequest(newWordtMessage, Method.Post);
                         newWordtMessage_request.AddJsonBody(newWords);
                         restClient.PostAsync(newWordtMessage_request).Wait();
                     });
 
                     tasks.Add(taskWord);
-                    
+
                     var insertAllOccMessage = "Occurrences/InsertAllOcc";
                     //restClient.PostAsync(new RestRequest(insertAllOccMessage).AddParameter("application/json", JsonSerializer.Serialize(wordsInFile), ParameterType.RequestBody));
-                    var taskOcc = Task.Run(() => 
+                    var taskOcc = Task.Run(() =>
                     {
-                        var insertAllOccMessage_request = new RestRequest(insertAllOccMessage + "?docId=" + documents[file.FullName],Method.Post);
+                        var insertAllOccMessage_request = new RestRequest(insertAllOccMessage + "?docId=" + documents[file.FullName], Method.Post);
                         insertAllOccMessage_request.AddJsonBody(GetWordIdFromWords(wordIds));
                         restClient.PostAsync(insertAllOccMessage_request).Wait();
                     });
@@ -137,10 +137,11 @@ namespace Indexer
             }
             catch (AggregateException ex)
             {
-                // TODO: Log exceptions
                 foreach (var innerException in ex.InnerExceptions)
                 {
                     Console.WriteLine($"Request failed: {innerException.Message}");
+                    Console.WriteLine($"Exception thrown in method: {innerException.TargetSite}");
+                    Console.WriteLine($"Stack Trace: {innerException.StackTrace}");
                 }
             }
         }
