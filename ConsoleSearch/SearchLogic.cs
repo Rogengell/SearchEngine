@@ -63,7 +63,13 @@ namespace ConsoleSearch
             if(wordIds.Count>0){
 
                 var urlAlleWord = "Documents/GetDocuments";
-                var task = restClient.GetAsync<Dictionary<int, int>>(new RestRequest(urlAlleWord).AddParameter("application/json", JsonSerializer.Serialize(wordIds), ParameterType.RequestBody));
+                Console.WriteLine("get Doc");
+
+                var request = new RestRequest(urlAlleWord,Method.Post);
+
+                request.AddJsonBody(JsonSerializer.Serialize(wordIds));
+
+                var task = restClient.PostAsync<Dictionary<int, int>>(request);
                 /*
                 var getDocuments = new HttpRequestMessage(HttpMethod.Post, "Documents/GetDocuments")
                 {
@@ -89,6 +95,7 @@ namespace ConsoleSearch
             if(docIds.Count>0){
 
                 var urlAlleWord = "Documents/GetDocDetails";
+                Console.WriteLine("get Details");
                 var task = restClient.GetAsync<Dictionary<string, int>>(new RestRequest(urlAlleWord).AddParameter("application/json", JsonSerializer.Serialize(docIds), ParameterType.RequestBody));
                 /*
                 var getDocumentDetails = new HttpRequestMessage(HttpMethod.Post, "Documents/GetDocDetails")

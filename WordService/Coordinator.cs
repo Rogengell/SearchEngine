@@ -1,4 +1,5 @@
 using System.Data;
+using System.Data.Common;
 using Microsoft.Data.SqlClient;
 
 public class Coordinator
@@ -55,14 +56,15 @@ public class Coordinator
 
     private IDbConnection GetConnectionByServerName(string serverName)
     {
+        /*
         if (ConnectionCache.TryGetValue(serverName, out var connection))
         {
             return connection;
         }
-        
-        connection = new SqlConnection($"Server={serverName};User Id=sa;Password=SuperSecret7!;Encrypt=false;");
+        */
+        var connection = new SqlConnection($"Server={serverName};User Id=sa;Password=SuperSecret7!;Encrypt=false;");
         connection.Open();
-        ConnectionCache.Add(serverName, connection);
+        //ConnectionCache.Add(serverName, connection);
         return connection;
     }
 }

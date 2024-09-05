@@ -35,3 +35,4 @@ msbuild.wrn
 ._.DS_Store
 __MACOSX
 full.tar.gz
+.fake

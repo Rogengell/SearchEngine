@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data;
+using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.Data.SqlClient;
 
 namespace WordService
@@ -7,6 +8,7 @@ namespace WordService
     internal class Database
     {   
         private Coordinator _coordinator = new Coordinator();
+
         private static readonly Database _instance = new();
 
         private Database()
@@ -44,6 +46,7 @@ namespace WordService
 
                     transaction.Commit();
                 }
+                connection.Close();
             }
         }
 
@@ -66,12 +69,15 @@ namespace WordService
                         res.Add(w, id);
                     }
                 }
+
+                connections.Close();
             }
             return res;
         }
         internal void InsertAllOcc(int docId, ISet<int> wordIds)
         {
-            using (var transaction = _coordinator.GetOccurrenceConnection().BeginTransaction())
+            var connection = _coordinator.GetOccurrenceConnection();
+            using (var transaction = connection.BeginTransaction())
             {
                 var command = _coordinator.GetOccurrenceConnection().CreateCommand();
                 command.Transaction = transaction;
@@ -96,10 +102,12 @@ namespace WordService
 
                 transaction.Commit();
             }
+            connection.Close();
         }
         internal void InsertDocument(int id, string url)
         {
-            var insertCmd = _coordinator.GetDocumentConnection().CreateCommand();
+            var connection = _coordinator.GetDocumentConnection();
+            var insertCmd = connection.CreateCommand();
             insertCmd.CommandText = "INSERT INTO Documents(id, url) VALUES(@id,@url)";
 
             var pName = new SqlParameter("url", url);
@@ -109,6 +117,7 @@ namespace WordService
             insertCmd.Parameters.Add(pCount);
 
             insertCmd.ExecuteNonQuery();
+            connection.Close();
         }
 
 
@@ -123,7 +132,8 @@ namespace WordService
 
             var sql = @"SELECT docId, COUNT(wordId) AS count FROM Occurrences WHERE wordId IN " + AsString(wordIds) + " GROUP BY docId ORDER BY count DESC";
 
-            var selectCmd = _coordinator.GetOccurrenceConnection().CreateCommand();
+            var connection = _coordinator.GetOccurrenceConnection();
+            var selectCmd = connection.CreateCommand();
             selectCmd.CommandText = sql;
 
             using (var reader = selectCmd.ExecuteReader())
@@ -136,6 +146,7 @@ namespace WordService
                     res.Add(docId, count);
                 }
             }
+            connection.Close();
             return res;
         }
 
@@ -143,7 +154,8 @@ namespace WordService
         {
             List<string> res = new List<string>();
 
-            var selectCmd = _coordinator.GetDocumentConnection().CreateCommand();
+            var connection = _coordinator.GetDocumentConnection();
+            var selectCmd = connection.CreateCommand();
             selectCmd.CommandText = "SELECT * FROM Documents WHERE id IN " + AsString(docIds);
 
             using (var reader = selectCmd.ExecuteReader())
@@ -156,6 +168,7 @@ namespace WordService
                     res.Add(url);
                 }
             }
+            connection.Close();
             return res;
         }
 
@@ -177,18 +190,24 @@ namespace WordService
                 Execute(connection, "DROP TABLE IF EXISTS Occurrences");
                 Execute(connection, "DROP TABLE IF EXISTS Words");
                 Execute(connection, "DROP TABLE IF EXISTS Documents");
+                connection.Close();
             }
         }
 
         public void CreateDatabase()
-        {
-            Execute(_coordinator.GetDocumentConnection(), "CREATE TABLE Documents(id INTEGER PRIMARY KEY, url VARCHAR(500))");
-            Execute(_coordinator.GetOccurrenceConnection(), "CREATE TABLE Occurrences(wordId INTEGER, docId INTEGER)");
-            
+        {   
+            var connectionDoc = _coordinator.GetDocumentConnection(); 
+            Execute(connectionDoc, "CREATE TABLE Documents(id INTEGER PRIMARY KEY, url VARCHAR(500))");
+            connectionDoc.Close();
+            var connectionOCc = _coordinator.GetOccurrenceConnection();
+            Execute(connectionOCc, "CREATE TABLE Occurrences(wordId INTEGER, docId INTEGER)");
+            connectionOCc.Close();
             foreach (var connection in _coordinator.GetAllWordConnections())
             {
                 Execute(connection, "CREATE TABLE Words(id INTEGER PRIMARY KEY, name VARCHAR(500))");
+                connection.Close();
             }
+            
         }
     }
 }

@@ -6,6 +6,7 @@ services:
       ACCEPT_EULA: "Y"
     volumes:
       - mssql-document:/var/opt/mssql
+      - ./my.cnf:/etc/mysql/my.cnf
   occurrence-db:
     image: mcr.microsoft.com/azure-sql-edge:latest
     environment:
@@ -13,6 +14,7 @@ services:
       ACCEPT_EULA: "Y"
     volumes:
       - mssql-occurrence:/var/opt/mssql
+      - ./my.cnf:/etc/mysql/my.cnf
     depends_on:
       - document-db
   short-word-db:
@@ -22,6 +24,7 @@ services:
       ACCEPT_EULA: "Y"
     volumes:
       - mssql-data-short:/var/opt/mssql
+      - ./my.cnf:/etc/mysql/my.cnf
     depends_on:
       - occurrence-db
   medium-word-db:
@@ -31,6 +34,7 @@ services:
       ACCEPT_EULA: "Y"
     volumes:
       - mssql-data-medium:/var/opt/mssql
+      - ./my.cnf:/etc/mysql/my.cnf
     depends_on:
       - short-word-db
   long-word-db:
@@ -40,6 +44,7 @@ services:
       ACCEPT_EULA: "Y"
     volumes:
       - mssql-data-long:/var/opt/mssql
+      - ./my.cnf:/etc/mysql/my.cnf
     depends_on:
       - medium-word-db
   word-service:

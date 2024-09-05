@@ -25,6 +25,7 @@ namespace Indexer
             var urlCreate = "DatabaceManagement/CreateDatabase";
             restClient.PostAsync(new RestRequest(urlCreate));
 
+            Thread.Sleep(2000);
             Console.WriteLine("DONE!");
             /*
             var urlDelete = "DatabaceManagement/DeleteDatabase";
