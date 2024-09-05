@@ -17,6 +17,6 @@ public class DatabaceManagementController : Controller
     public async void ReCreateDatabase()
     {
         Console.WriteLine(Environment.MachineName);
-        _dataBase.ReCreateDatabase();
+        await _dataBase.ReCreateDatabase();
     }
 }

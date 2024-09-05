@@ -17,7 +17,7 @@ public class DocumentsController : Controller
     public async void InsertDocument(int id, string url)
     {
         Console.WriteLine(Environment.MachineName);
-        _dataBase.InsertDocument(id, url);
+        await _dataBase.InsertDocument(id, url);
     }
 
     [HttpPost("GetDocuments")]

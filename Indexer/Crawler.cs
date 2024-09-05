@@ -78,8 +78,8 @@ namespace Indexer
 
 
                     Dictionary<string, int> newWords = new Dictionary<string, int>();
-                    ISet<string> wordsInFile = ExtractWordsInFile(file);
-                    foreach (var aWord in wordsInFile)
+                    ISet<string> wordIds = ExtractWordsInFile(file);
+                    foreach (var aWord in wordIds)
                     {
                         if (!words.ContainsKey(aWord))
                         {
@@ -100,13 +100,12 @@ namespace Indexer
 
                     tasks.Add(taskWord);
                     
-                    // TODO: insert occurrences, make it work, it breaks
                     var insertAllOccMessage = "Occurrences/InsertAllOcc";
                     //restClient.PostAsync(new RestRequest(insertAllOccMessage).AddParameter("application/json", JsonSerializer.Serialize(wordsInFile), ParameterType.RequestBody));
                     var taskOcc = Task.Run(() => 
                     {
                         var insertAllOccMessage_request = new RestRequest(insertAllOccMessage + "?docId=" + documents[file.FullName],Method.Post);
-                        insertAllOccMessage_request.AddJsonBody(GetWordIdFromWords(wordsInFile));
+                        insertAllOccMessage_request.AddJsonBody(GetWordIdFromWords(wordIds));
                         restClient.PostAsync(insertAllOccMessage_request).Wait();
                     });
 

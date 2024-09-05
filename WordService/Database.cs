@@ -14,7 +14,7 @@ namespace WordService
         {
         }
 
-        internal async void InsertAllWords(Dictionary<string, int> res)
+        internal async Task InsertAllWords(Dictionary<string, int> res)
         {
             foreach(var p in res)
             {
@@ -67,19 +67,21 @@ namespace WordService
             }
             return res;
         }
-        internal async void InsertAllOcc(int docId, ISet<int> wordIds)
+        internal async Task InsertAllOcc(int docId, ISet<int> wordIds)
         {
             var connection = await _coordinator.GetOccurrenceConnection();
             using (var transaction = connection.BeginTransaction())
             {
-                var command = _coordinator.GetOccurrenceConnection().Result.CreateCommand();
+
+                var command = connection.CreateCommand();
+
                 command.Transaction = transaction;
+
                 command.CommandText = @"INSERT INTO Occurrences(wordId, docId) VALUES(@wordId,@docId)";
 
                 var paramwordId = command.CreateParameter();
                 paramwordId.ParameterName = "wordId";
-                
-                command.Parameters.Add(paramwordId);
+                command.Parameters.Add(paramwordId);    
 
                 var paramDocId = command.CreateParameter();
                 paramDocId.ParameterName = "docId";
@@ -92,12 +94,11 @@ namespace WordService
                     paramwordId.Value = p;
                     command.ExecuteNonQuery();
                 }
-
                 transaction.Commit();
             }
             connection.Close();
         }
-        internal async void InsertDocument(int id, string url)
+        internal async Task InsertDocument(int id, string url)
         {
             var connection = await _coordinator.GetDocumentConnection();
             var insertCmd = connection.CreateCommand();
@@ -176,7 +177,7 @@ namespace WordService
             trans.Commit();
         }
 
-        internal async void ReCreateDatabase()
+        internal async Task ReCreateDatabase()
         {
             await foreach(var connection in _coordinator.GetAllConnections())
             { 
@@ -185,10 +186,10 @@ namespace WordService
                 Execute(connection, "DROP TABLE IF EXISTS Documents");
                 connection.Close();
             }
-            CreateDatabase();
+            await CreateDatabase();
         }
 
-        public async void CreateDatabase()
+        public async Task CreateDatabase()
         {   
             var connectionDoc = await _coordinator.GetDocumentConnection(); 
             Execute(connectionDoc, "CREATE TABLE Documents(id INTEGER PRIMARY KEY, url VARCHAR(500))");

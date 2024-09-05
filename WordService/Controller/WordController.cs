@@ -16,7 +16,7 @@ public class WordController : Controller
     public async void InsertAllWords(Dictionary<string, int> res)
     {
         Console.WriteLine(Environment.MachineName);
-        _dataBase.InsertAllWords(res);
+        await _dataBase.InsertAllWords(res);
     }
 
     [HttpGet("GetAllWords")]

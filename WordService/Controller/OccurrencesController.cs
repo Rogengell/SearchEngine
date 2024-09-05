@@ -15,6 +15,6 @@ public class Occurrences : Controller
     public async void InsertAllOcc(int docId, ISet<int> wordIds)
     {
         Console.WriteLine(Environment.MachineName);
-        _dataBase.InsertAllOcc(docId, wordIds);
+        await _dataBase.InsertAllOcc(docId, wordIds);
     }
 }
