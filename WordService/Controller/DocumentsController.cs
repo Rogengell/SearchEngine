@@ -6,26 +6,31 @@ using WordService;
 public class DocumentsController : Controller
 {
 
-    private Database _dataBase = Database.getInstance();
+    private static Database _dataBase;
 
+    public DocumentsController(WordService.Database dataBase)
+    {
+        _dataBase = dataBase;
+    }
+    
     [HttpPost("InsertDocument")]
-    public void InsertDocument(int id, string url)
+    public async void InsertDocument(int id, string url)
     {
         Console.WriteLine(Environment.MachineName);
         _dataBase.InsertDocument(id, url);
     }
 
     [HttpPost("GetDocuments")]
-    public Dictionary<int, int> GetDocuments(List<int> wordIds)
+    public async Task<Dictionary<int, int>> GetDocuments(List<int> wordIds)
     {
         Console.WriteLine(Environment.MachineName);
-        return _dataBase.GetDocuments(wordIds);
+        return await _dataBase.GetDocuments(wordIds);
     }
 
     [HttpPost("GetDocDetails")]
-    public List<string> GetDocDetails(List<int> docIds)
+    public async Task<List<string>> GetDocDetails(List<int> docIds)
     {
         Console.WriteLine(Environment.MachineName);
-        return _dataBase.GetDocDetails(docIds);
+        return await _dataBase.GetDocDetails(docIds);
     }
 }

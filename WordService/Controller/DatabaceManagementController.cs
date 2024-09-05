@@ -6,19 +6,17 @@ using WordService;
 public class DatabaceManagementController : Controller
 {
 
-    private Database _dataBase = Database.getInstance();
+    private static Database _dataBase;
 
-    [HttpDelete("DeleteDatabase")]
-    public void DeleteDatabase()
+    public DatabaceManagementController(WordService.Database database)
     {
-        Console.WriteLine(Environment.MachineName);
-        _dataBase.DeleteDatabase();
+        _dataBase = database;
     }
 
-    [HttpPost("CreateDatabase")]
-    public void CreateDatabase()
+    [HttpDelete("reCreateDatabase")]
+    public async void ReCreateDatabase()
     {
         Console.WriteLine(Environment.MachineName);
-        _dataBase.CreateDatabase();
+        _dataBase.ReCreateDatabase();
     }
 }

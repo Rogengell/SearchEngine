@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
+using System.Threading.Tasks;
 using RestSharp;
 
 namespace Indexer
@@ -51,10 +52,10 @@ namespace Indexer
         // in the directory [dir]. Only files with an extension in
         // [extensions] is read. The value part of the return value is
         // the number of occurrences of the key.
-        public void IndexFilesIn(DirectoryInfo dir, List<string> extensions)
+        public async void IndexFilesIn(DirectoryInfo dir, List<string> extensions)
         {
             Console.WriteLine("Crawling " + dir.FullName);
-
+            var tasks = new List<Task>();
             foreach (var file in dir.EnumerateFiles())
             {
                 if (extensions.Contains(file.Extension))
@@ -65,7 +66,16 @@ namespace Indexer
                     api.Send(documentMessage);
                     */
                     var documentMessage = "Documents/InsertDocument";
-                    restClient.PostAsync(new RestRequest(documentMessage + "?id=" + documents[file.FullName]  + "&url=" + Uri.EscapeDataString(file.FullName)));
+                    //restClient.PostAsync(new RestRequest(documentMessage + "?id=" + documents[file.FullName]  + "&url=" + Uri.EscapeDataString(file.FullName)));
+
+                    var taskDoc = Task.Run(() => 
+                    {
+                        var documentMessage_request = new RestRequest(documentMessage + "?id=" + documents[file.FullName]  + "&url=" + Uri.EscapeDataString(file.FullName));
+                        restClient.PostAsync(documentMessage_request).Wait();
+                    });
+
+                    tasks.Add(taskDoc);
+
 
                     Dictionary<string, int> newWords = new Dictionary<string, int>();
                     ISet<string> wordsInFile = ExtractWordsInFile(file);
@@ -79,12 +89,28 @@ namespace Indexer
                     }
 
                     var newWordtMessage = "Word/InsertAllWords";
-                    restClient.PostAsync(new RestRequest(newWordtMessage).AddParameter("application/json", JsonSerializer.Serialize(newWords), ParameterType.RequestBody));
+                    //restClient.PostAsync(new RestRequest(newWordtMessage).AddParameter("application/json", JsonSerializer.Serialize(newWords), ParameterType.RequestBody));
+                    
+                    var taskWord = Task.Run(() => 
+                    {
+                        var newWordtMessage_request = new RestRequest(newWordtMessage,Method.Post);
+                        newWordtMessage_request.AddJsonBody(newWords);
+                        restClient.PostAsync(newWordtMessage_request).Wait();
+                    });
 
-                    var insertAllOccMessage = "Occurrences/InsertAllOcc?docId=" + documents[file.FullName];
-                    restClient.PostAsync(new RestRequest(insertAllOccMessage).AddParameter("application/json", JsonSerializer.Serialize(wordsInFile), ParameterType.RequestBody));
+                    tasks.Add(taskWord);
+                    
+                    // TODO: insert occurrences, make it work, it breaks
+                    var insertAllOccMessage = "Occurrences/InsertAllOcc";
+                    //restClient.PostAsync(new RestRequest(insertAllOccMessage).AddParameter("application/json", JsonSerializer.Serialize(wordsInFile), ParameterType.RequestBody));
+                    var taskOcc = Task.Run(() => 
+                    {
+                        var insertAllOccMessage_request = new RestRequest(insertAllOccMessage + "?docId=" + documents[file.FullName],Method.Post);
+                        insertAllOccMessage_request.AddJsonBody(GetWordIdFromWords(wordsInFile));
+                        restClient.PostAsync(insertAllOccMessage_request).Wait();
+                    });
 
-                    Thread.Sleep(1000);
+                    tasks.Add(taskOcc);
 
                     /*
                     var newWordtMessage = new HttpRequestMessage(HttpMethod.Post, "Word/InsertAllWords")
@@ -105,6 +131,17 @@ namespace Indexer
             foreach (var d in dir.EnumerateDirectories())
             {
                 IndexFilesIn(d, extensions);
+            }
+            try
+            {
+                Task.WaitAll(tasks.ToArray());
+            }
+            catch (AggregateException ex)
+            {
+                foreach (var innerException in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"Request failed: {innerException.Message}");
+                }
             }
         }
     }

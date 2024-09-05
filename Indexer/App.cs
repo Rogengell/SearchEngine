@@ -17,15 +17,10 @@ namespace Indexer
             
             RestClient restClient = new RestClient("http://word-service");
 
-            var urlDelete = "DatabaceManagement/DeleteDatabase";
+            var urlDelete = "DatabaceManagement/ReCreateDatabase";
             restClient.DeleteAsync(new RestRequest(urlDelete));
 
-            Thread.Sleep(2000);
-            
-            var urlCreate = "DatabaceManagement/CreateDatabase";
-            restClient.PostAsync(new RestRequest(urlCreate));
-
-            Thread.Sleep(2000);
+            Thread.Sleep(10000);
             Console.WriteLine("DONE!");
             /*
             var urlDelete = "DatabaceManagement/DeleteDatabase";

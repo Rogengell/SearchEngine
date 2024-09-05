@@ -5,19 +5,24 @@ using WordService;
 [Route("[controller]")]
 public class WordController : Controller
 {
-    private Database _dataBase = Database.getInstance();
+    private static Database _dataBase;
+
+    public WordController(WordService.Database database)
+    {
+        _dataBase = database;
+    }
 
     [HttpPost("InsertAllWords")]
-    public void InsertAllWords(Dictionary<string, int> res)
+    public async void InsertAllWords(Dictionary<string, int> res)
     {
         Console.WriteLine(Environment.MachineName);
         _dataBase.InsertAllWords(res);
     }
 
     [HttpGet("GetAllWords")]
-    public Dictionary<string, int> GetAllWords()
+    public async Task<Dictionary<string, int>> GetAllWords()
     {
         Console.WriteLine(Environment.MachineName);
-        return _dataBase.GetAllWords();
+        return await _dataBase.GetAllWords();
     }
 }

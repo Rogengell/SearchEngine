@@ -5,10 +5,14 @@ using WordService;
 [Route("[controller]")]
 public class Occurrences : Controller
 {
-    private Database _dataBase = Database.getInstance();
+    private static Database _dataBase;
 
+    public Occurrences(WordService.Database dataBase)
+    {
+        _dataBase = dataBase;
+    }
     [HttpPost("InsertAllOcc")]
-    public void InsertAllOcc(int docId, ISet<int> wordIds)
+    public async void InsertAllOcc(int docId, ISet<int> wordIds)
     {
         Console.WriteLine(Environment.MachineName);
         _dataBase.InsertAllOcc(docId, wordIds);

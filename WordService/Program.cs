@@ -1,4 +1,8 @@
+using WordService;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<WordService.Database>();
 
 builder.Services.AddControllers();
 

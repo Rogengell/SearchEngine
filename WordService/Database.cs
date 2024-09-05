@@ -5,27 +5,20 @@ using Microsoft.Data.SqlClient;
 
 namespace WordService
 {
-    internal class Database
+    public class Database
     {   
         private Coordinator _coordinator = new Coordinator();
 
-        private static readonly Database _instance = new();
 
-        private Database()
+        public Database()
         {
-            _coordinator = new Coordinator();
         }
 
-        public static Database getInstance()
-        {
-            return _instance; 
-        }
-
-        internal void InsertAllWords(Dictionary<string, int> res)
+        internal async void InsertAllWords(Dictionary<string, int> res)
         {
             foreach(var p in res)
             {
-                var connection = _coordinator.GetWordConnection(p.Key);
+                var connection = await _coordinator.GetWordConnection(p.Key);
                 using (var transaction = connection.BeginTransaction())
                 {
                     var command = connection.CreateCommand();
@@ -50,11 +43,11 @@ namespace WordService
             }
         }
 
-        internal Dictionary<string, int> GetAllWords()
+        internal async Task<Dictionary<string, int>> GetAllWords()
         {
             Dictionary<string, int> res = new Dictionary<string, int>();
 
-            foreach(var connections in _coordinator.GetAllWordConnections())
+            await foreach(var connections in _coordinator.GetAllWordConnections())
             {
                 var selectCmd = connections.CreateCommand();
                 selectCmd.CommandText = "SELECT * FROM Words";
@@ -74,12 +67,12 @@ namespace WordService
             }
             return res;
         }
-        internal void InsertAllOcc(int docId, ISet<int> wordIds)
+        internal async void InsertAllOcc(int docId, ISet<int> wordIds)
         {
-            var connection = _coordinator.GetOccurrenceConnection();
+            var connection = await _coordinator.GetOccurrenceConnection();
             using (var transaction = connection.BeginTransaction())
             {
-                var command = _coordinator.GetOccurrenceConnection().CreateCommand();
+                var command = _coordinator.GetOccurrenceConnection().Result.CreateCommand();
                 command.Transaction = transaction;
                 command.CommandText = @"INSERT INTO Occurrences(wordId, docId) VALUES(@wordId,@docId)";
 
@@ -104,9 +97,9 @@ namespace WordService
             }
             connection.Close();
         }
-        internal void InsertDocument(int id, string url)
+        internal async void InsertDocument(int id, string url)
         {
-            var connection = _coordinator.GetDocumentConnection();
+            var connection = await _coordinator.GetDocumentConnection();
             var insertCmd = connection.CreateCommand();
             insertCmd.CommandText = "INSERT INTO Documents(id, url) VALUES(@id,@url)";
 
@@ -126,13 +119,13 @@ namespace WordService
             return string.Concat("(", string.Join(',', x.Select(i => i.ToString())), ")");
         }
 
-        internal Dictionary<int, int> GetDocuments(List<int> wordIds)
+        internal async Task<Dictionary<int, int>> GetDocuments(List<int> wordIds)
         {
             var res = new Dictionary<int, int>();
 
             var sql = @"SELECT docId, COUNT(wordId) AS count FROM Occurrences WHERE wordId IN " + AsString(wordIds) + " GROUP BY docId ORDER BY count DESC";
 
-            var connection = _coordinator.GetOccurrenceConnection();
+            var connection = await _coordinator.GetOccurrenceConnection();
             var selectCmd = connection.CreateCommand();
             selectCmd.CommandText = sql;
 
@@ -150,11 +143,11 @@ namespace WordService
             return res;
         }
 
-        internal List<string> GetDocDetails(List<int> docIds)
+        internal async Task<List<string>> GetDocDetails(List<int> docIds)
         {
             List<string> res = new List<string>();
 
-            var connection = _coordinator.GetDocumentConnection();
+            var connection = await _coordinator.GetDocumentConnection();
             var selectCmd = connection.CreateCommand();
             selectCmd.CommandText = "SELECT * FROM Documents WHERE id IN " + AsString(docIds);
 
@@ -183,26 +176,27 @@ namespace WordService
             trans.Commit();
         }
 
-        internal void DeleteDatabase()
+        internal async void ReCreateDatabase()
         {
-            foreach(var connection in _coordinator.GetAllConnections())
+            await foreach(var connection in _coordinator.GetAllConnections())
             { 
                 Execute(connection, "DROP TABLE IF EXISTS Occurrences");
                 Execute(connection, "DROP TABLE IF EXISTS Words");
                 Execute(connection, "DROP TABLE IF EXISTS Documents");
                 connection.Close();
             }
+            CreateDatabase();
         }
 
-        public void CreateDatabase()
+        public async void CreateDatabase()
         {   
-            var connectionDoc = _coordinator.GetDocumentConnection(); 
+            var connectionDoc = await _coordinator.GetDocumentConnection(); 
             Execute(connectionDoc, "CREATE TABLE Documents(id INTEGER PRIMARY KEY, url VARCHAR(500))");
             connectionDoc.Close();
-            var connectionOCc = _coordinator.GetOccurrenceConnection();
+            var connectionOCc = await _coordinator.GetOccurrenceConnection();
             Execute(connectionOCc, "CREATE TABLE Occurrences(wordId INTEGER, docId INTEGER)");
             connectionOCc.Close();
-            foreach (var connection in _coordinator.GetAllWordConnections())
+            await foreach (var connection in _coordinator.GetAllWordConnections())
             {
                 Execute(connection, "CREATE TABLE Words(id INTEGER PRIMARY KEY, name VARCHAR(500))");
                 connection.Close();

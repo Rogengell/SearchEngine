@@ -52,7 +52,7 @@ services:
       context: .
       dockerfile: WordService/Dockerfile
     deploy:
-      replicas: 1
+      replicas: 4
     depends_on:
       - document-db
       - occurrence-db
@@ -63,9 +63,6 @@ services:
     build:
       context: .
       dockerfile: Indexer/Dockerfile
-    depends_on:
-      word-service:
-        condition: service_started
   console-services:
     build:
       context: .
