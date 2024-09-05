@@ -137,6 +137,7 @@ namespace Indexer
             }
             catch (AggregateException ex)
             {
+                // TODO: Log exceptions
                 foreach (var innerException in ex.InnerExceptions)
                 {
                     Console.WriteLine($"Request failed: {innerException.Message}");
